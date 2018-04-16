@@ -8,34 +8,34 @@ public class bstTree {
         this.guard = new Node(null, null, null, 0L, 0L, 0L, 0L);
     }
 
-    public void add(Long x){
-        if(guard.left == null){
+    public void add(Long x) {
+        if (guard.left == null) {
             guard.left = new Node(null, null, guard, x, x, 1L, 1L);
-        }else{
+        } else {
             guard.left.add(x);
         }
     }
 
-    public void erase(Long x){
-        if(guard.left != null){
+    public void erase(Long x) {
+        if (guard.left != null) {
             guard.left.erase(x);
         }
     }
 
-    public Double getMedian(){
-        if(guard.left != null)
+    public Double getMedian() {
+        if (guard.left != null)
             return guard.left.getMedian();
         return 0D;
     }
 
-    public Long getSum(){
-        if(guard.left != null)
+    public Long getSum() {
+        if (guard.left != null)
             return guard.left.getSum();
         return 0L;
     }
 
-    public Double getAverageValue(){
-        if(guard.left != null)
+    public Double getAverageValue() {
+        if (guard.left != null)
             return guard.left.getAverageValue();
         return Double.NaN;
     }
@@ -59,35 +59,35 @@ public class bstTree {
             this.amount = amount;
         }
 
-        public Node(){
+        public Node() {
 
         }
 
-        private Node find(Long x){
+        private Node find(Long x) {
             Node result = this;
-            while(result != null && !result.data.equals(x)){
-                if(x < result.data){
+            while (result != null && !result.data.equals(x)) {
+                if (x.compareTo(result.data) < 0) {
                     result = result.left;
-                }else{
+                } else {
                     result = result.right;
                 }
             }
             return result;
         }
 
-        private void add(Long x){
+        private void add(Long x) {
             Node node = this;
-            while(!node.data.equals(x)) {
+            while (!node.data.equals(x)) {
                 node.size++;
                 node.sum += x;
-                if (x < node.data) {
-                    if(node.left == null){
+                if (x.compareTo(node.data) < 0) {
+                    if (node.left == null) {
                         node.left = new Node(null, null, node, x, x, 1L, 1L);
                         return;
                     }
                     node = node.left;
                 } else {
-                    if(node.right == null){
+                    if (node.right == null) {
                         node.right = new Node(null, null, node, x, x, 1L, 1L);
                         return;
                     }
@@ -99,9 +99,9 @@ public class bstTree {
             node.sum += x;
         }
 
-        private void fix(Long x){
+        private void fix(Long x) {
             Node node = this;
-            while(node != null){
+            while (node != null) {
                 node.size--;
                 node.sum -= x;
                 node = node.parent;
@@ -113,7 +113,7 @@ public class bstTree {
             if (toDestroy != null) {
                 toDestroy.fix(x);
                 toDestroy.amount--;
-                if (toDestroy.amount > 0) {
+                if (toDestroy.amount.compareTo(0L) > 0) {
                     return;
                 }
 
@@ -145,6 +145,25 @@ public class bstTree {
                         while (successor.left != null) {
                             successor = successor.left;
                         }
+
+                        if (successor != toDestroy.right) {
+                            Node y = successor.parent;
+                            while (y != toDestroy) {
+                                y.size -= successor.amount;
+                                y.sum -= successor.data * successor.amount;
+                                y = y.parent;
+                            }
+                            if (successor.parent.left == successor) {
+                                successor.parent.left = successor.right;
+                            } else {
+                                successor.parent.right = successor.right;
+                            }
+                            if (successor.right != null) {
+                                successor.right.parent = successor.parent;
+                            }
+                            successor.right = toDestroy.right;
+                            toDestroy.right.parent = successor;
+                        }
                         toDestroy.left.parent = successor;
                         successor.left = toDestroy.left;
                         if (toDestroy.parent.left == toDestroy) {
@@ -152,70 +171,49 @@ public class bstTree {
                         } else {
                             toDestroy.parent.right = successor;
                         }
-
-                        if (successor != toDestroy.right) {
-                            {
-                                Node y = successor.parent;
-                                while (y != toDestroy) {
-                                    y.size--;
-                                    y.sum -= x;
-                                    y = y.parent;
-                                }
-                                if (successor.parent.left == successor) {
-                                    successor.parent.left = successor.right;
-                                } else {
-                                    successor.parent.right = successor.right;
-                                }
-                                if (successor.right != null) {
-                                    successor.right.parent = successor.parent;
-                                }
-                                successor.right = toDestroy.right;
-                            }
-                            successor.parent = toDestroy.parent;
-                            successor.sum = successor.left.sum + successor.right.sum + successor.amount;
-                            successor.size = successor.left.size + successor.right.sum + successor.sum;
+                        successor.parent = toDestroy.parent;
+                        successor.sum = successor.left.sum + successor.amount * successor.data;
+                        successor.size = successor.left.size + successor.amount;
+                        if(successor.right != null){
+                            successor.sum += successor.right.sum;
+                            successor.size += successor.right.size;
                         }
                     }
                 }
             }
         }
 
-        private Long getSum(){
+        private Long getSum() {
             return sum;
         }
 
-        private Double getAverageValue(){
-            return sum.doubleValue()/size.doubleValue();
+        private Double getAverageValue() {
+            return sum.doubleValue() / size.doubleValue();
         }
 
-        private Double getElement(Long k) throws IllegalArgumentException{
-            if(size < k){
+        private Double getElement(Long k) throws IllegalArgumentException {
+            if (size < k) {
                 throw new IllegalArgumentException("Tree has only " + size + "values");
             }
-            if(left != null) {
-                if(left.size >= k){
+            if (left != null) {
+                if (left.size >= k) {
                     return left.getElement(k);
-                }else{
+                } else {
                     k -= left.size;
-                    if(k <= amount){
-                        return data.doubleValue();
-                    }else{
-                        return right.getElement(k - amount);
-                    }
-                }
-            }else{
-                if(k <= amount){
-                    return data.doubleValue();
-                }else{
-                    return right.getElement(k - amount);
                 }
             }
+            if (k <= amount) {
+                return data.doubleValue();
+            } else {
+                return right.getElement(k - amount);
+            }
+
         }
 
-        private Double getMedian(){
-            if(size % 2 == 1)
-                return getElement((size+1)/2);
-            return (getElement(size/2) + getElement(size/2 + 1))/2D;
+        private Double getMedian() {
+            if (size % 2 == 1)
+                return getElement((size + 1) / 2);
+            return (getElement(size / 2) + getElement(size / 2 + 1)) / 2D;
         }
     }
 }

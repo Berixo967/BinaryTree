@@ -19,7 +19,7 @@ public class bstTreeTest {
     @Test
     public void testRandomBig(){
         Random random = new Random();
-        long numberOfIterations = 10000L;
+        long numberOfIterations = 1000000L;
         long mod = 2000L;
         Map<Long, Long> m = new HashMap<>();
         long sum = 0L;
@@ -45,9 +45,12 @@ public class bstTreeTest {
                     if(m.get(randomLong) != null){
                         size--;
                         sum -= randomLong;
-                        m.put(randomLong, m.get(randomLong) - 1);
+                        if(m.get(randomLong) == 1){
+                            m.remove(randomLong);
+                        }else{
+                            m.put(randomLong, m.get(randomLong) - 1);
+                        }
                     }
-                    break;
                 case 2:
                     assertEquals((Long) sum, tree.getSum());
                     break;
