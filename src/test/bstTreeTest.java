@@ -19,43 +19,43 @@ public class bstTreeTest {
     @Test
     public void testRandomBig(){
         Random random = new Random();
-        Long z = 1000000L;
-        Long mod = 2000L;
+        long numberOfIterations = 10000L;
+        long mod = 2000L;
         Map<Long, Long> m = new HashMap<>();
-        Long sum = 0L;
-        Long size = 0L;
-        Long r;
-        while(z-- != 0L){
+        long sum = 0L;
+        long size = 0L;
+        long randomLong;
+        while(numberOfIterations-- != 0L){
             Integer x = random.nextInt();
-            switch (x&4){
+            switch ((x%4+4)%4){
                 case 0:
-                    r = random.nextLong()%mod;
-                    tree.add(r);
-                    if(m.get(r) == null){
-                        m.put(r, 1L);
+                    randomLong = random.nextLong()%mod;
+                    tree.add(randomLong);
+                    if(m.get(randomLong) == null){
+                        m.put(randomLong, 1L);
                     }else{
-                        m.put(r, m.get(r) + 1);
+                        m.put(randomLong, m.get(randomLong) + 1);
                     }
-                    sum += r;
+                    sum += randomLong;
                     size++;
                     break;
                 case 1:
-                    r = random.nextLong()%mod;
-                    tree.erase(r);
-                    if(m.get(r) != null){
+                    randomLong = random.nextLong()%mod;
+                    tree.erase(randomLong);
+                    if(m.get(randomLong) != null){
                         size--;
-                        sum -= r;
-                        m.put(r, m.get(r) - 1);
+                        sum -= randomLong;
+                        m.put(randomLong, m.get(randomLong) - 1);
                     }
                     break;
                 case 2:
-                    assertEquals(tree.getSum(), sum);
+                    assertEquals((Long) sum, tree.getSum());
                     break;
                 case 3:
-                    assertEquals(tree.getAverageValue(), new Double(sum.doubleValue()/size.doubleValue()));
+                    assertEquals(tree.getAverageValue(), new Double(((double)sum)/((double)size)));
                     break;
             }
-            if(z%1000 == 0){
+            if(numberOfIterations%1000 == 0){
                 ArrayList<Long> list = new ArrayList<>();
                 for (Map.Entry<Long, Long> entry : m.entrySet())
                 {
@@ -78,12 +78,12 @@ public class bstTreeTest {
 
     @Test
     public void testMedianOdd(){
-        Long z = 800000L;
+        Long numberOfIterations = 800000L;
         Long median = 10L;
         Long mod = 42034L;
         Random random = new Random();
         tree.add(median);
-        while (z-- != 0){
+        while (numberOfIterations-- != 0){
             Long left = median + 1 + (random.nextLong()%mod + mod)%mod;
             Long right = median - 1 - (random.nextLong()%mod + mod)%mod;
             tree.add(left);

@@ -37,7 +37,7 @@ public class bstTree {
     public Double getAverageValue(){
         if(guard.left != null)
             return guard.left.getAverageValue();
-        return 0D;
+        return Double.NaN;
     }
 
     private class Node {
